@@ -11,48 +11,74 @@ class CatGame {
     //define images to use in the game
     const IMAGES = [
       "Background.png",
-      "Blueberry-Highlight.png",
       "Blueberry.png",
+      "Blueberry-2x.png",
+      "Blueberry-Highlight.png",
+      "Blueberry-Highlight-2x.png",
       "Bubble-Buttons.png",
       "Bubble-Icons.png",
       "Cat-Sprite-Sheet.png",
       "Objects.png",
       "Tiles.png"
     ];
+    let gamePath = "https://raw.githubusercontent.com/pensivepixel/\
+Cat-Video-Game/master/";
+    let imagesPath = gamePath+"Cat-Game-Assets/Images/";
 
-    //load the images
-    loadImages("./Cat-Game-Assets/Images/", IMAGES, imagesLoaded);
+
+    //load the images, render images offscreen, start game loop
+    this.loadImages(imagesPath, IMAGES).then(
+    createOffscreenCanvases()).then(
+    main());
+
+
   }
-  imagesLoaded(images) {
-    this.images = images;
-    displayMenu();
+  createOffscreenCanvases() {
+    //--BACKGROUND--
+    //shortcut reference to current image
+    let img = this.images["Background"];
+    //create a new offScreenCanvas and 2d context
+    let osc = new offScreenCanvas(img.width*2, img.height);
+    let ctx = osc.getContext("2d");
+    //draw rect in context
+    ctx.rect(0, 0, img.width*2, img.height);
+    //fill with horizontally repeating background
+    ctx.fillStyle = this.bg.ctx.createPattern(img, "repeat-x");
+    ctx.fill();
+    //save context in Game object
+    this.offScreenCanvases["Background"] = osc;
   }
   /**
     * Loads images into the HTML document
     * @returns An array of image objects, passed to the callback
-    * src: https://codeincomplete.com/articles/javascript-game-foundations-loading-assets/
+    * Adapted From: https://codeincomplete.com/articles/javascript-game-foundations-loading-assets/
     * @param {string} path - directory that holds the images in the names array
     * @param {array} names - array containing strings of image names and file suffixes (ex: "myimage.png")
     * @callback callback - function to call once all images are loaded. Passes an array of image objects.
     */
-  loadImages(path, names, callback) {
-    var result = {},
-        count  = names.length,
-        onload = function() {
-          if (--count == 0){
-            callback(result);
-          }
-        };
+  loadImages(path, names) {
+    return new Promise(function(resolve, reject){
+      var result = {},
+          startTime = new Date();
+          count  = names.length,
+          onload = function() {
+            if (--count == 0){
+              this.images = result;
+              resolve();
+            }
+          };
 
-    for(let n = 0 ; n < names.length ; n++) {
-      let name = names[n];
-      result[name] = document.createElement('img');
-      result[name].addEventListener('load', onload);
-      result[name].src = path + name;
-    }
+      for(let n = 0 ; n < names.length ; n++) {
+        let filename = names[n];
+        let name = filename.substring(0, filename.indexOf("."));
+        result[name] = new Image();
+        result[name].onload = onload;
+        result[name].src = path + filename;
+      }
+    });
   }
-  displayMenu(){
-    
+  main(){
+
   }
 }
 
