@@ -81,7 +81,16 @@ Cat-Video-Game/master/";
     this.offscreenCanvases["Background"] = osc;
   }
   main(){
-    this.bg.ctx.drawImage(this.offscreenCanvases["Background"], 0, 0);
+    let background = this.offscreenCanvases["Background"],
+        sx = 0,
+        sy = 158,
+        sWidth = 1000,
+        sHeight = 625,
+        dx = 0,
+        dy = 0,
+        dWidth = 1000,
+        dHeight = 625
+    this.bg.ctx.drawImage(background, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   }
 }
 
