@@ -27,26 +27,13 @@ Cat-Video-Game/master/";
 
 
     //load the images, render images offscreen, start game loop
-    this.loadImages(imagesPath, IMAGES).then(
-    createOffscreenCanvases()).then(
-    main());
+    this.loadImages(imagesPath, IMAGES).then(function(images){
+      return this.createOffscreenCanvases(images);
+    }.bind(this)).then(function(){
+      return this.main();
+    }.bind(this));
 
 
-  }
-  createOffscreenCanvases() {
-    //--BACKGROUND--
-    //shortcut reference to current image
-    let img = this.images["Background"];
-    //create a new offScreenCanvas and 2d context
-    let osc = new offScreenCanvas(img.width*2, img.height);
-    let ctx = osc.getContext("2d");
-    //draw rect in context
-    ctx.rect(0, 0, img.width*2, img.height);
-    //fill with horizontally repeating background
-    ctx.fillStyle = this.bg.ctx.createPattern(img, "repeat-x");
-    ctx.fill();
-    //save context in Game object
-    this.offScreenCanvases["Background"] = osc;
   }
   /**
     * Loads images into the HTML document
@@ -59,12 +46,10 @@ Cat-Video-Game/master/";
   loadImages(path, names) {
     return new Promise(function(resolve, reject){
       var result = {},
-          startTime = new Date();
           count  = names.length,
           onload = function() {
             if (--count == 0){
-              this.images = result;
-              resolve();
+              resolve(result);
             }
           };
 
@@ -72,13 +57,31 @@ Cat-Video-Game/master/";
         let filename = names[n];
         let name = filename.substring(0, filename.indexOf("."));
         result[name] = new Image();
-        result[name].onload = onload;
+        result[name].onload = onload.bind(this);
         result[name].src = path + filename;
       }
     });
   }
+  createOffscreenCanvases(images) {
+    this.images = images;
+    this.offscreenCanvases = [];
+    console.log();
+    //--BACKGROUND--
+    //shortcut reference to current image
+    let img = this.images["Background"];
+    //create a new offScreenCanvas and 2d context
+    let osc = new OffscreenCanvas(img.width*2, img.height);
+    let ctx = osc.getContext("2d");
+    //draw rect in context
+    ctx.rect(0, 0, img.width*2, img.height);
+    //fill with horizontally repeating background
+    ctx.fillStyle = this.bg.ctx.createPattern(img, "repeat-x");
+    ctx.fill();
+    //save context in Game object
+    this.offscreenCanvases["Background"] = osc;
+  }
   main(){
-
+    this.bg.ctx.drawImage(this.offscreenCanvases["Background"], 0, 0);
   }
 }
 
