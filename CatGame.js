@@ -8,23 +8,12 @@ class CatGame {
     this.fg = new Layer("foreground", 999, this.width, this.height);
     this.bg = new Layer("background", 0, this.width, this.height);
 
-    //define images to use in the game
-    const IMAGES = [
-      "Background.png",
-      "Blueberry-2x.png",
-      "Blueberry-Highlight-2x.png",
-      "Bubble-Buttons.png",
-      "Bubble-Icons.png",
-      "Cat-Sprite-Sheet.png",
-      "Objects.png",
-      "Tiles.png"
-    ];
     let gamePath = "https://raw.githubusercontent.com/pensivepixel/\
 Cat-Video-Game/master/";
     let imagesPath = gamePath+"Cat-Game-Assets/Images/";
 
     //load the images, render images offscreen, start game loop
-    this.loadImages(imagesPath, IMAGES).then(function(images){
+    this.loadImages(imagesPath, "Image-Mappings.JSON").then(function(images){
       return this.createOffscreenCanvases(images);
     }.bind(this)).then(function(){
       return this.main();
@@ -39,7 +28,13 @@ Cat-Video-Game/master/";
     * @param {array} names - array containing strings of image names and file suffixes (ex: "myimage.png")
     * @callback callback - function to call once all images are loaded. Passes an array of image objects.
     */
-  loadImages(path, names) {
+  loadImages(imageDirectory, imageMapName) {
+    let imageMap = fetch(imageDirectory+imageMapName).then(function(results){
+      let result = results.json();
+      console.log(result);
+    });
+
+
     return new Promise(function(resolve, reject){
       var result = {},
           count  = names.length,
