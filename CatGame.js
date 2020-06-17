@@ -5,15 +5,13 @@ class CatGame {
     this.height = height;
 
     //create all game layers
-    this.fg = new Layer("characters", 999, this.width, this.height);
+    this.fg = new Layer("foreground", 999, this.width, this.height);
     this.bg = new Layer("background", 0, this.width, this.height);
 
     //define images to use in the game
     const IMAGES = [
       "Background.png",
-      "Blueberry.png",
       "Blueberry-2x.png",
-      "Blueberry-Highlight.png",
       "Blueberry-Highlight-2x.png",
       "Bubble-Buttons.png",
       "Bubble-Icons.png",
@@ -25,14 +23,12 @@ class CatGame {
 Cat-Video-Game/master/";
     let imagesPath = gamePath+"Cat-Game-Assets/Images/";
 
-
     //load the images, render images offscreen, start game loop
     this.loadImages(imagesPath, IMAGES).then(function(images){
       return this.createOffscreenCanvases(images);
     }.bind(this)).then(function(){
       return this.main();
     }.bind(this));
-
 
   }
   /**
@@ -62,10 +58,11 @@ Cat-Video-Game/master/";
       }
     });
   }
+
   createOffscreenCanvases(images) {
     this.images = images;
     this.offscreenCanvases = [];
-    console.log();
+
     //--BACKGROUND--
     //shortcut reference to current image
     let img = this.images["Background"];
@@ -79,17 +76,58 @@ Cat-Video-Game/master/";
     ctx.fill();
     //save context in Game object
     this.offscreenCanvases["Background"] = osc;
+
+    // TODO: create osc's for all of the images
+
   }
+
   main(){
+    // TODO: relocate
+    this.backgroundOffsetX = 0;
+    this.backgroundOffsetY = 158;
+
+    /*
+      Here's the flow of the game. Things in brackets aren't priority.
+
+      > [Loading...] //HTML & CSS animation?
+      > Home screen: PLAY! | Scores | Levels | Settings
+
+      PLAY! > launches most advanced level that isn't locked
+
+      [Scores] > undefined
+
+      [Levels] > Simple grid of level numbers and locked icons
+
+      [Settings] > undefined
+
+      Level launch >
+        • read from appropriate JSON file
+        • build the level: place the elements as specified in JSON level file
+          • including the character
+        • activate keyboard listeners that modify data
+    */
+    requestAnimationFrame(this.infiniteMoveBackground.bind(this));
+  }
+
+  infiniteMoveBackground() {
+    this.backgroundOffsetX += 0.5;
+    if (this.backgroundOffsetX > 1000) {
+      this.backgroundOffsetX -= 1000;
+    }
+    this.drawBackground(this.backgroundOffsetX, this.backgroundOffsetY);
+    requestAnimationFrame(this.infiniteMoveBackground.bind(this));
+  }
+
+  drawBackground(offsetX, offsetY) {
     let background = this.offscreenCanvases["Background"],
-        sx = 0,
-        sy = 158,
+        sx = offsetX,
+        sy = offsetY,
         sWidth = 1000,
         sHeight = 625,
         dx = 0,
         dy = 0,
         dWidth = 1000,
-        dHeight = 625
+        dHeight = 625;
     this.bg.ctx.drawImage(background, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   }
 }
