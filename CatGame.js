@@ -86,26 +86,6 @@ Cat-Video-Game/master/";
     this.backgroundOffsetX = 0;
     this.backgroundOffsetY = 158;
 
-    /*
-      Here's the flow of the game. Things in brackets aren't priority.
-
-      > [Loading...] //HTML & CSS animation?
-      > Home screen: PLAY! | Scores | Levels | Settings
-
-      PLAY! > launches most advanced level that isn't locked
-
-      [Scores] > undefined
-
-      [Levels] > Simple grid of level numbers and locked icons
-
-      [Settings] > undefined
-
-      Level launch >
-        • read from appropriate JSON file
-        • build the level: place the elements as specified in JSON level file
-          • including the character
-        • activate keyboard listeners that modify data
-    */
     requestAnimationFrame(this.infiniteMoveBackground.bind(this));
   }
 

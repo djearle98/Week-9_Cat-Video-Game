@@ -1,0 +1,261 @@
+[
+  {
+    "filename": "Background.png",
+    "layout": "misc",
+    "images": [
+      {
+        "name": "background",
+        "width": 1000,
+        "height": 1200,
+        "x": 0,
+        "y": 0
+      }
+    ]
+  },
+  {
+    "filename": "Cat.png",
+    "layout": "animation",
+    "unitWidth": 185,
+    "unitHeight": 162,
+    "animations": [
+      {
+        "name": "idle",
+        "n": 10
+      },
+      {
+        "name": "walk",
+        "n": 10
+      },
+      {
+        "name": "slide",
+        "n": 10
+      },
+      {
+        "name": "run",
+        "n": 8
+      },
+      {
+        "name": "jump",
+        "n": 8
+      },
+      {
+        "name": "land",
+        "n": 8
+      }
+    ]
+  },
+  {
+    "filename": "Objects.png",
+    "layout": "misc",
+    "images": [
+      {
+        "name": "tree1",
+        "x": 0,
+        "y": 0,
+        "width": 282,
+        "height": 301
+      },
+      {
+        "name": "tree2",
+        "x": 282,
+        "y": 0,
+        "width": 282,
+        "height": 275
+      },
+      {
+        "name": "blueberryHighlight",
+        "x": 0,
+        "y": 301,
+        "width": 247,
+        "height": 247
+      },
+      {
+        "name": "blueberry",
+        "x": 247,
+        "y": 301,
+        "width": 105,
+        "height": 107
+      },
+      {
+        "name": "bush2",
+        "x": 247,
+        "y": 408,
+        "width": 133,
+        "height": 65
+      },
+      {
+        "name": "bush1",
+        "x": 247,
+        "y": 473,
+        "width": 133,
+        "height": 65
+      },
+      {
+        "name": "stump",
+        "x": 380,
+        "y": 288,
+        "width": 116,
+        "height": 44
+      },
+      {
+        "name": "crate",
+        "x": 380,
+        "y": 338,
+        "width": 77,
+        "height": 77
+      },
+      {
+        "name": "stone",
+        "x": 464,
+        "y": 339,
+        "width": 90,
+        "height": 54
+      },
+      {
+        "name": "squareSign",
+        "x": 380,
+        "y": 422,
+        "width": 63,
+        "height": 65
+      },
+      {
+        "name": "arrowSign",
+        "x": 443,
+        "y": 422,
+        "width": 62,
+        "height": 64
+      },
+      {
+        "name": "bush3",
+        "x": 380,
+        "y": 487,
+        "width": 73,
+        "height": 47
+      },
+      {
+        "name": "bush4",
+        "x": 457,
+        "y": 488,
+        "width": 73,
+        "height": 46
+      },
+      {
+        "name": "mushroom2",
+        "x": 505,
+        "y": 399,
+        "width": 49,
+        "height": 41
+      },
+      {
+        "name": "mushroom1",
+        "x": 505,
+        "y": 445,
+        "width": 49,
+        "height": 41
+      }
+    ]
+  },
+  {
+    "filename": "Tiles.png",
+    "layout": "grid",
+    "unitWidth": 128,
+    "unitHeight": 128,
+    "images": [
+      {
+        "name": "grassFloatingLeft",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "name": "grassFloatingCenter",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "name": "grassFloatingRight",
+        "x": 2,
+        "y": 0
+      },
+      {
+        "name": "grassGroundedEdgeLeft",
+        "x": 0,
+        "y": 1
+      },
+      {
+        "name": "grassGrounded",
+        "x": 1,
+        "y": 1
+      },
+      {
+        "name": "grassGroundedEdgeRight",
+        "x": 2,
+        "y": 1
+      },
+      {
+        "name": "soilEdgeLeft",
+        "x": 0,
+        "y": 2
+      },
+      {
+        "name": "soil",
+        "x": 1,
+        "y": 2
+      },
+      {
+        "name": "soilEdgeRight",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "name": "soilFloatingLeft",
+        "x": 0,
+        "y": 3
+      },
+      {
+        "name": "soilFloatingCenter",
+        "x": 1,
+        "y": 3
+      },
+      {
+        "name": "soilFloatingRight",
+        "x": 2,
+        "y": 3
+      },
+      {
+        "name": "soilCornerRight",
+        "x": 0,
+        "y": 4
+      },
+      {
+        "name": "soilGround",
+        "x": 1,
+        "y": 4
+      },
+      {
+        "name": "soilCornerLeft",
+        "x": 2,
+        "y": 4
+      },
+      {
+        "name": "grassGroundedEndLeft",
+        "x": 0,
+        "y": 5
+      },
+      {
+        "name": "grassGroundedEndRight",
+        "x": 2,
+        "y": 5
+      },
+      {
+        "name": "waterWaves",
+        "x": 0,
+        "y": 6
+      },
+      {
+        "name": "waterSolid",
+        "x": 2,
+        "y": 6
+      }
+    ]
+  }
+]
