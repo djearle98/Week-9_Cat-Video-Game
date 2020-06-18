@@ -11,53 +11,70 @@ class CatGame {
     let gamePath = "https://raw.githubusercontent.com/pensivepixel/\
 Cat-Video-Game/master/";
     let imagesPath = gamePath+"Cat-Game-Assets/Images/";
-
     //load the images, render images offscreen, start game loop
-    this.loadImages(imagesPath, "Image-Mappings.JSON").then(function(images){
-      return this.createOffscreenCanvases(images);
-    }.bind(this)).then(function(){
-      return this.main();
-    }.bind(this));
-
-  }
-  /**
-    * Loads images into the HTML document
-    * @returns An array of image objects, passed to the callback
-    * Adapted From: https://codeincomplete.com/articles/javascript-game-foundations-loading-assets/
-    * @param {string} path - directory that holds the images in the names array
-    * @param {array} names - array containing strings of image names and file suffixes (ex: "myimage.png")
-    * @callback callback - function to call once all images are loaded. Passes an array of image objects.
-    */
-  loadImages(imageDirectory, imageMapName) {
-    let imageMap = fetch(imageDirectory+imageMapName).then(function(results){
-      let result = results.json();
-      console.log(result);
-    });
-
-
-    return new Promise(function(resolve, reject){
-      var result = {},
-          count  = names.length,
-          onload = function() {
-            if (--count == 0){
-              resolve(result);
-            }
-          };
-
-      for(let n = 0 ; n < names.length ; n++) {
-        let filename = names[n];
-        let name = filename.substring(0, filename.indexOf("."));
-        result[name] = new Image();
-        result[name].onload = onload.bind(this);
-        result[name].src = path + filename;
+    fetch(imagesPath + "ImageMaps.JSON") //get ImageMap data
+    .then(response => { //convert to JSON
+      console.log(typeof(response));
+      return response.json();
+    })
+    .then(imageMaps => { //download all images
+      this.imageMaps = imageMaps;
+      let promises = [];
+      for (let i=0; i<imageMaps.length; i++){
+        let filename = imageMaps[i].filename;
+        promises[i] = new Promise((resolve) => {
+          let img = new Image();
+          img.onload = () => resolve(img);
+          img.src = imagesPath+filename;
+        });
       }
+      return Promise.all(promises);
+    }).then(images => {
+      this.processSpriteSheets(images); //draw images offscreen for reuse
+      //this.main(); //begin the main loop
     });
   }
 
-  createOffscreenCanvases(images) {
-    this.images = images;
-    this.offscreenCanvases = [];
+  processSpriteSheets(spriteSheets) {
+    //iterate over all spriteSheets in imageMaps
+    this.sprites = [];
+    for (let i=0; i<this.imageMaps.length; i++){
+      switch (this.imageMaps[i].layout) {
+        case "misc":
+          this.processSpriteSheetAsMisc(spriteSheets[i], this.imageMaps[i]);
+          break;
+        case "animation":
+          this.processSpriteSheetAsAnimation(spriteSheets[i], this.imageMaps[i]);
+          break;
+        case "grid":
+          this.processSpriteSheetAsGrid(spriteSheets[i], this.imageMaps[i]);
+          break;
+        default:
+          console.log("Error processing spriteSheet: invalid layout type: "
+          + this.imageMaps[i]);
+      }
+    }
+  }
 
+  processSpriteSheetAsMisc(sprite, map){
+    console.log(map.filename + " is a misc");
+    //iterate over all sprites in sheet
+      //create sprite
+      //this.sprites.push(sprite);
+  }
+  processSpriteSheetAsAnimation(sprite, map){
+    console.log(map.filename + " is an Animation");
+    //iterate over all sprites in sheet
+      //create sprite
+      //this.sprites.push(sprite);
+  }
+  processSpriteSheetAsGrid(sprite, map){
+    console.log(map.filename + " is a grid");
+    //iterate over all sprites in sheet
+      //create sprite
+      //this.sprites.push(sprite);
+  }
+/*
     //--BACKGROUND--
     //shortcut reference to current image
     let img = this.images["Background"];
@@ -71,10 +88,10 @@ Cat-Video-Game/master/";
     ctx.fill();
     //save context in Game object
     this.offscreenCanvases["Background"] = osc;
-
+*/
     // TODO: create osc's for all of the images
 
-  }
+
 
   main(){
     // TODO: relocate
