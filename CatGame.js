@@ -10,6 +10,7 @@ class CatGame {
 
     //create a space to store sprites used in the game
     this.sprites = new Map();
+    this.animations = new Map();
 
     let gamePath = "https://raw.githubusercontent.com/pensivepixel/\
 Cat-Video-Game/master/";
@@ -62,8 +63,8 @@ Cat-Video-Game/master/";
   }
 
   processSpriteSheetAsMisc(sprite, map){
-    console.log(map.filename + " is a misc");
     //iterate over all sprites in sheet
+    let result = new Map();
     for (let i=0; i<map.images.length; i++) {
       let currentSprite = map.images[i];
       let osc = new OffscreenCanvas(currentSprite.width, currentSprite.height);
@@ -75,22 +76,50 @@ Cat-Video-Game/master/";
       let dy, dx = dy = 0;
 
       ctx.drawImage(sprite, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+      result.set(currentSprite.name, osc);
       this.sprites.set(currentSprite.name, osc);
     }
-  }
-  processSpriteSheetAsAnimation(sprite, map){
-    console.log(map.filename + " is an Animation");
-    //iterate over all sprites in sheet
-      //create sprite
-      //this.sprites.push(sprite);
+    return result;
   }
   processSpriteSheetAsGrid(sprite, map){
-    console.log(map.filename + " is a grid");
-    //iterate over all sprites in sheet
-      //create sprite
-      //this.sprites.push(sprite);
+    //convert encoded grid map to misc map
+    let unitWidth = map.unitWidth;
+    let unitHeight = map.unitHeight;
+    for (let i=0; i<map.images.length; i++) {
+      map.images[i].x *= unitWidth;
+      map.images[i].y *= unitHeight;
+      map.images[i].width = unitWidth;
+      map.images[i].height = unitHeight;
+    }
+    //process as misc
+    return this.processSpriteSheetAsMisc(sprite, map);
   }
-
+  processSpriteSheetAsAnimation(sprite, map){
+    //convert animation to misc map
+    //create animation array of sprites and save to animations map
+    map.images = [];
+    let animations = new Map();
+    let unitWidth = map.unitWidth;
+    let unitHeight = map.unitHeight;
+    for (let i=0; i<map.animations.length; i++) {
+      let animation = [];
+      for (let j=0; j<map.animations[i].n; j++) {
+        //create and push an image object for this frame
+        let spriteName = map.animations[i].name+""+j;
+        animation.push(spriteName);
+        map.images.push({
+          "name": spriteName,
+          "width": unitWidth,
+          "height": unitHeight,
+          "x": unitWidth*j,
+          "y": unitHeight*i
+        });
+      }
+      animations.set(map.animations[i].name, animation);
+    }
+    this.animations = animations;
+    return this.processSpriteSheetAsMisc(sprite, map);
+  }
   allSpriteAnimation(){
     let allSprites = this.sprites.values();
     let count = this.sprites.size-1;
