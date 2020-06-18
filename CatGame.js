@@ -8,6 +8,9 @@ class CatGame {
     this.fg = new Layer("foreground", 999, this.width, this.height);
     this.bg = new Layer("background", 0, this.width, this.height);
 
+    //create a space to store sprites used in the game
+    this.sprites = new Map();
+
     let gamePath = "https://raw.githubusercontent.com/pensivepixel/\
 Cat-Video-Game/master/";
     let imagesPath = gamePath+"Cat-Game-Assets/Images/";
@@ -31,13 +34,15 @@ Cat-Video-Game/master/";
       return Promise.all(promises);
     }).then(images => {
       this.processSpriteSheets(images); //draw images offscreen for reuse
+
+      this.allSpriteAnimation();
+
       //this.main(); //begin the main loop
     });
   }
 
   processSpriteSheets(spriteSheets) {
     //iterate over all spriteSheets in imageMaps
-    this.sprites = [];
     for (let i=0; i<this.imageMaps.length; i++){
       switch (this.imageMaps[i].layout) {
         case "misc":
@@ -59,8 +64,19 @@ Cat-Video-Game/master/";
   processSpriteSheetAsMisc(sprite, map){
     console.log(map.filename + " is a misc");
     //iterate over all sprites in sheet
-      //create sprite
-      //this.sprites.push(sprite);
+    for (let i=0; i<map.images.length; i++) {
+      let currentSprite = map.images[i];
+      let osc = new OffscreenCanvas(currentSprite.width, currentSprite.height);
+      let ctx = osc.getContext("2d");
+      let sx = currentSprite.x;
+      let sy = currentSprite.y;
+      let dWidth, sWidth = dWidth = currentSprite.width;
+      let dHeight, sHeight = dHeight = currentSprite.height;
+      let dy, dx = dy = 0;
+
+      ctx.drawImage(sprite, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+      this.sprites.set(currentSprite.name, osc);
+    }
   }
   processSpriteSheetAsAnimation(sprite, map){
     console.log(map.filename + " is an Animation");
@@ -73,6 +89,20 @@ Cat-Video-Game/master/";
     //iterate over all sprites in sheet
       //create sprite
       //this.sprites.push(sprite);
+  }
+
+  allSpriteAnimation(){
+    let allSprites = this.sprites.values();
+    let count = this.sprites.size-1;
+    let interval = setInterval(()=>{
+      this.fg.ctx.clearRect(0,0,this.fg.canvas.width, this.fg.canvas.height);
+      this.fg.ctx.drawImage(allSprites.next().value, 0, 0);
+      count--;
+      if(count < 0) {
+        count = this.sprites.size-1;
+        allSprites = this.sprites.values();
+      }
+    }, 250);
   }
 /*
     //--BACKGROUND--
