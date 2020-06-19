@@ -48,7 +48,7 @@
         "x": 7,
         "y": 0
       }
-    }
+    ]
   },
   {
     "name": "grassFloatingLeft",
@@ -89,7 +89,7 @@
   {
     "name": "arrowSign",
     "instances": [
-      !{
+      {
         "x": 3,
         "y": 1
       }
@@ -98,7 +98,7 @@
   {
     "name": "mushroom1",
     "instances": [
-      !{
+      {
         "x": 4,
         "y": 1
       }
@@ -107,7 +107,7 @@
   {
     "name": "blueberry",
     "instances": [
-      !{
+      {
         "x": 6,
         "y": 3
       }
@@ -121,5 +121,5 @@
         "y": 3
       }
     ]
-  ]
+  }
 ]
