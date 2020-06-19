@@ -1,214 +1,218 @@
-[
-  {
-    "name": "grassGrounded",
-    "instances": [
-      {
-        "x": 0,
-        "y": 1090
-      },
-      {
-        "x": 128,
-        "y": 1090
-      },
-      {
-        "x": 256,
-        "y": 1090
-      }
-    ]
-  },
-  {
-    "name": "grassGroundedEdgeRight",
-    "instances": [
-      {
-        "x": 384,
-        "y": 1090
-      }
-    ]
-  },
-  {
-    "name": "waterWaves",
-    "instances": [
-      {
-        "x": 384,
-        "y": 1090
-      },
-      {
-        "x": 512,
-        "y": 1090
-      },
-      {
-        "x": 640,
-        "y": 1090
-      },
-      {
-        "x": 768,
-        "y": 1090
-      },
-      {
-        "x": 896,
-        "y": 1090
-      }
-    ]
-  },
-  {
-    "name": "grassFloatingLeft",
-    "instances": [
-      {
-        "x": 640,
-        "y": 962
-      }
-    ]
-  },
-  {
-    "name": "grassFloatingCenter",
-    "instances": [
-      {
-        "x": 768,
-        "y": 962
-      }
-    ]
-  },
-  {
-    "name": "grassFloatingRight",
-    "instances": [
-      {
-        "x": 896,
-        "y": 962
-      }
-    ]
-  },
-  {
-    "name": "soilEdgeRight",
-    "instances": [
-      {
-        "x": 384,
-        "y": 1218
-      }
-    ]
-  },
-  {
-    "name": "soilCornerRight",
-    "instances": [
-      {
-        "x": 384,
-        "y": 1346
-      }
-    ]
-  },
-  {
-    "name": "soilGround",
-    "instances": [
-      {
-        "x": 512,
-        "y": 1246
-      },
-      {
-        "x": 640,
-        "y": 1246
-      },
-      {
-        "x": 768,
-        "y": 1246
-      },
-      {
-        "x": 896,
-        "y": 1246
-      }
-    ]
-  },
-  {
-    "name": "waterSolid",
-    "instances": [
-      {
-        "x": 384,
-        "y": 1218
-      },
-      {
-        "x": 512,
-        "y": 1218
-      },
-      {
-        "x": 512,
-        "y": 1346
-      },
-      {
-        "x": 640,
-        "y": 1218
-      },
-      {
-        "x": 640,
-        "y": 1346
-      },
-      {
-        "x": 768,
-        "y": 1218
-      },
-      {
-        "x": 768,
-        "y": 1346
-      },
-      {
-        "x": 896,
-        "y": 1218
-      },
-      {
-        "x": 896,
-        "y": 1346
-      }
-    ]
-  },
-  {
-    "name": "tree2",
-    "instances": [
-      {
-        "x": -112,
-        "y": 815
-      }
-    ]
-  },
-  {
-    "name": "arrowSign",
-    "instances": [
-      {
-        "x": 256,
-        "y": 1026
-      }
-    ]
-  },
-  {
-    "name": "mushroom1",
-    "instances": [
-      {
-        "x": 384,
-        "y": 1049
-      }
-    ]
-  },
-  {
-    "name": "blueberry",
-    "instances": [
-      {
-        "x": 768,
-        "y": 833
-      }
-    ]
-  },
-  {
-    "name": "idle1",
-    "instances": [
-      {
-        "x": 128,
-        "y": 940
-      }
-    ]
-  },
-  {
-    "name": "stone",
-    "instances": [
-      {
-        "x": 896,
-        "y": 908
-      }
-    ]
-  }
-]
+{
+  "static": [
+    {
+      "name": "grassGrounded",
+      "instances": [
+        {
+          "x": 0,
+          "y": 1090
+        },
+        {
+          "x": 128,
+          "y": 1090
+        },
+        {
+          "x": 256,
+          "y": 1090
+        }
+      ]
+    },
+    {
+      "name": "grassGroundedEdgeRight",
+      "instances": [
+        {
+          "x": 384,
+          "y": 1090
+        }
+      ]
+    },
+    {
+      "name": "waterWaves",
+      "instances": [
+        {
+          "x": 384,
+          "y": 1090
+        },
+        {
+          "x": 512,
+          "y": 1090
+        },
+        {
+          "x": 640,
+          "y": 1090
+        },
+        {
+          "x": 768,
+          "y": 1090
+        },
+        {
+          "x": 896,
+          "y": 1090
+        }
+      ]
+    },
+    {
+      "name": "grassFloatingLeft",
+      "instances": [
+        {
+          "x": 640,
+          "y": 962
+        }
+      ]
+    },
+    {
+      "name": "grassFloatingCenter",
+      "instances": [
+        {
+          "x": 768,
+          "y": 962
+        }
+      ]
+    },
+    {
+      "name": "grassFloatingRight",
+      "instances": [
+        {
+          "x": 896,
+          "y": 962
+        }
+      ]
+    },
+    {
+      "name": "soilEdgeRight",
+      "instances": [
+        {
+          "x": 384,
+          "y": 1218
+        }
+      ]
+    },
+    {
+      "name": "soilCornerRight",
+      "instances": [
+        {
+          "x": 384,
+          "y": 1346
+        }
+      ]
+    },
+    {
+      "name": "soilGround",
+      "instances": [
+        {
+          "x": 512,
+          "y": 1246
+        },
+        {
+          "x": 640,
+          "y": 1246
+        },
+        {
+          "x": 768,
+          "y": 1246
+        },
+        {
+          "x": 896,
+          "y": 1246
+        }
+      ]
+    },
+    {
+      "name": "waterSolid",
+      "instances": [
+        {
+          "x": 384,
+          "y": 1218
+        },
+        {
+          "x": 512,
+          "y": 1218
+        },
+        {
+          "x": 512,
+          "y": 1346
+        },
+        {
+          "x": 640,
+          "y": 1218
+        },
+        {
+          "x": 640,
+          "y": 1346
+        },
+        {
+          "x": 768,
+          "y": 1218
+        },
+        {
+          "x": 768,
+          "y": 1346
+        },
+        {
+          "x": 896,
+          "y": 1218
+        },
+        {
+          "x": 896,
+          "y": 1346
+        }
+      ]
+    },
+    {
+      "name": "tree2",
+      "instances": [
+        {
+          "x": -112,
+          "y": 815
+        }
+      ]
+    },
+    {
+      "name": "arrowSign",
+      "instances": [
+        {
+          "x": 256,
+          "y": 1026
+        }
+      ]
+    },
+    {
+      "name": "mushroom1",
+      "instances": [
+        {
+          "x": 384,
+          "y": 1049
+        }
+      ]
+    },
+    {
+      "name": "stone",
+      "instances": [
+        {
+          "x": 896,
+          "y": 908
+        }
+      ]
+    }
+  ],
+  "dynamic": [
+    {
+      "name": "cat",
+      "instances": [
+        {
+          "x": 128,
+          "y": 940
+        }
+      ]
+    },
+    {
+      "name": "blueberry",
+      "instances": [
+        {
+          "x": 768,
+          "y": 833
+        }
+      ]
+    }
+  ]
+}
