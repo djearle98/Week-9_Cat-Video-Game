@@ -7,20 +7,18 @@ class CatGame {
     //create all game layers
     this.fg = new Layer("foreground", 999, this.width, this.height);
     this.bg = new Layer("background", 0, this.width, this.height);
-
+    this.
     //create a space to store sprites used in the game
     this.sprites = new Map();
     this.animations = new Map();
 
-    let gamePath = "https://raw.githubusercontent.com/pensivepixel/\
+    this.gamePath = "https://raw.githubusercontent.com/pensivepixel/\
 Cat-Video-Game/master/";
-    let imagesPath = gamePath+"Cat-Game-Assets/Images/";
+    this.imagesPath = this.gamePath+"Cat-Game-Assets/Images/";
+    this.levelsPath = this.gamePath+"Levels/";
     //load the images, render images offscreen, start game loop
-    fetch(imagesPath + "ImageMaps.JSON") //get ImageMap data
-    .then(response => { //convert to JSON
-      console.log(typeof(response));
-      return response.json();
-    })
+    fetch(this.imagesPath + "ImageMaps.JSON") //get ImageMap data
+    .then(response => response.json())
     .then(imageMaps => { //download all images
       this.imageMaps = imageMaps;
       let promises = [];
@@ -29,16 +27,13 @@ Cat-Video-Game/master/";
         promises[i] = new Promise((resolve) => {
           let img = new Image();
           img.onload = () => resolve(img);
-          img.src = imagesPath+filename;
+          img.src = this.imagesPath+filename;
         });
       }
       return Promise.all(promises);
     }).then(images => {
       this.processSpriteSheets(images); //draw images offscreen for reuse
-
-      this.allSpriteAnimation();
-
-      //this.main(); //begin the main loop
+      this.main(); //begin the main loop
     });
   }
 
@@ -131,33 +126,38 @@ Cat-Video-Game/master/";
         count = this.sprites.size-1;
         allSprites = this.sprites.values();
       }
-    }, 250);
+    }, 100);
   }
-/*
-    //--BACKGROUND--
-    //shortcut reference to current image
-    let img = this.images["Background"];
-    //create a new offScreenCanvas and 2d context
-    let osc = new OffscreenCanvas(img.width*2, img.height);
-    let ctx = osc.getContext("2d");
-    //draw rect in context
-    ctx.rect(0, 0, img.width*2, img.height);
-    //fill with horizontally repeating background
-    ctx.fillStyle = this.bg.ctx.createPattern(img, "repeat-x");
-    ctx.fill();
-    //save context in Game object
-    this.offscreenCanvases["Background"] = osc;
-*/
-    // TODO: create osc's for all of the images
-
-
 
   main(){
-    // TODO: relocate
-    this.backgroundOffsetX = 0;
-    this.backgroundOffsetY = 158;
+    //display main menu
+    fetch(this.levelsPath + "Level-"+1+".JSON")
+    .then(result => result.json())
+    .then(levelMap => {
+      this.buildLevel(levelMap);
+      this.levelLoop(levelMap)
+    });
+  }
 
-    requestAnimationFrame(this.infiniteMoveBackground.bind(this));
+  buildLevel(levelMap){
+    //build static sprites
+    let static = levelMap.static;
+    for (let i=0; i<static.length; i++) {
+      let sprite = this.sprites.get(static[i].name);
+      let instances = static[i].instances;
+      for (let j=0; j<instances.length; j++) {
+        let x = instances[j].x;
+        let y = instances[j].y;
+        this.bg.ctx.drawImage(sprite, x, y);
+      }
+    }
+    //build dynamic sprites
+
+    // TODO:
+  }
+
+  levelLoop(){
+    console.log("levelLoop!");
   }
 
   infiniteMoveBackground() {
@@ -166,7 +166,7 @@ Cat-Video-Game/master/";
       this.backgroundOffsetX -= 1000;
     }
     this.drawBackground(this.backgroundOffsetX, this.backgroundOffsetY);
-    requestAnimationFrame(this.infiniteMoveBackground.bind(this));
+    requestAnimationFrame(() => this.infiniteMoveBackground());
   }
 
   drawBackground(offsetX, offsetY) {
