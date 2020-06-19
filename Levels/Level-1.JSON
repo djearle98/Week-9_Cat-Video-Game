@@ -1,92 +1,125 @@
-{
-  "grass-grounded": [
-    {
-      "x": 0,
-      "y": 0
-    },
-    {
-      "x": 1,
-      "y": 0
-    },
-    {
-      "x": 2,
-      "y": 0
+[
+  {
+    "name": "grassGrounded",
+    "instances": [
+      {
+        "x": 0,
+        "y": 0
+      },
+      {
+        "x": 1,
+        "y": 0
+      },
+      {
+        "x": 2,
+        "y": 0
+      }
+    ]
+  },
+  {
+    "name": "grassGroundedEdgeRight",
+    "instances": [
+      {
+        "x": 3,
+        "y": 0
+      }
+    ]
+  },
+  {
+    "name": "waterWaves",
+    "instances": [
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 4,
+        "y": 0
+      },
+      {
+        "x": 5,
+        "y": 0
+      },
+      {
+        "x": 6,
+        "y": 0
+      },
+      {
+        "x": 7,
+        "y": 0
+      }
     }
-  ],
-  "grass-grounded-edge": [
-    {
-      "x": 3,
-      "y": 0
-    }
-  ],
-  "water-waves": [
-    {
-      "x": 3,
-      "y": 0
-    },
-    {
-      "x": 4,
-      "y": 0
-    },
-    {
-      "x": 5,
-      "y": 0
-    },
-    {
-      "x": 6,
-      "y": 0
-    },
-    {
-      "x": 7,
-      "y": 0
-    }
-  ],
-  "grass-floating-left": [
-    {
-      "x": 5,
-      "y": 2
-    }
-  ],
-  "grass-floating-center": [
-    {
-      "x": 6,
-      "y": 2
-    }
-  ],
-  "grass-floating-right": [
-    {
-      "x": 7,
-      "y": 2
-    }
-  ],
-  "tree-3": [
-    {
-      "x": -1,
-      "y": 1
-    }
-  ],
-  "sign-2": [
-    {
-      "x": 3,
-      "y": 1
-    }
-  ],
-  "mushroom-1": [
-    {
-      "x": 4,
-      "y": 1
-    }
-  ],
-  "blueberry": [
-    {
-      "x": 6,
-      "y": 3
-    }
-  ],
-  "stone": [
-    {
-      "x": 7,
-      "y": 3
-    }
+  },
+  {
+    "name": "grassFloatingLeft",
+    "instances": [
+      {
+        "x": 5,
+        "y": 2
+      }
+    ]
+  },
+  {
+    "name": "grassFloatingCenter",
+    "instances": [
+      {
+        "x": 6,
+        "y": 2
+      }
+    ]
+  },
+  {
+    "name": "grassFloatingRight",
+    "instances": [
+      {
+        "x": 7,
+        "y": 2
+      }
+    ]
+  },
+  {
+    "name": "tree2",
+    "instances": [
+      {
+        "x": -1,
+        "y": 1
+      }
+    ]
+  },
+  {
+    "name": "arrowSign",
+    "instances": [
+      !{
+        "x": 3,
+        "y": 1
+      }
+    ]
+  },
+  {
+    "name": "mushroom1",
+    "instances": [
+      !{
+        "x": 4,
+        "y": 1
+      }
+    ]
+  },
+  {
+    "name": "blueberry",
+    "instances": [
+      !{
+        "x": 6,
+        "y": 3
+      }
+    ]
+  },
+  {
+    "name": "stone",
+    "instances": [
+      {
+        "x": 7,
+        "y": 3
+      }
+    ]
   ]
-}
+]
