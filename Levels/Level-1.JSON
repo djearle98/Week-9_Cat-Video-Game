@@ -1,6 +1,15 @@
 {
   "staticSprites": [
     {
+      "name": "background",
+      "instances": [
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
       "name": "grassGrounded",
       "instances": [
         {
