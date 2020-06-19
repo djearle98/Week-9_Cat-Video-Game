@@ -7,7 +7,7 @@ class CatGame {
     //create all game layers
     this.fg = new Layer("foreground", 999, this.width, this.height);
     this.bg = new Layer("background", 0, this.width, this.height);
-    this.
+
     //create a space to store sprites used in the game
     this.sprites = new Map();
     this.animations = new Map();
@@ -141,17 +141,17 @@ Cat-Video-Game/master/";
 
   buildLevel(levelMap){
     //build static sprites
-    let static = levelMap.static;
-    for (let i=0; i<static.length; i++) {
-      let sprite = this.sprites.get(static[i].name);
-      let instances = static[i].instances;
+    let staticSprites = levelMap.staticSprites;
+    for (let i=0; i<staticSprites.length; i++) {
+      let sprite = this.sprites.get(staticSprites[i].name);
+      let instances = staticSprites[i].instances;
       for (let j=0; j<instances.length; j++) {
         let x = instances[j].x;
         let y = instances[j].y;
         this.bg.ctx.drawImage(sprite, x, y);
       }
     }
-    //build dynamic sprites
+    //build dynamicSprites
 
     // TODO:
   }
@@ -203,4 +203,4 @@ class Layer {
   }
 }
 
-let catGame = new CatGame(1000, 625);
+let catGame = new CatGame(1024, 1858);
