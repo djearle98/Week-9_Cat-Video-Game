@@ -1,5 +1,5 @@
 {
-  "static": [
+  "staticSprites": [
     {
       "name": "grassGrounded",
       "instances": [
@@ -195,7 +195,7 @@
       ]
     }
   ],
-  "dynamic": [
+  "dynamicSprites": [
     {
       "name": "cat",
       "instances": [
