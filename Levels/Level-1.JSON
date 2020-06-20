@@ -195,6 +195,15 @@
       ]
     },
     {
+      "name": "mushroom2",
+      "instances": [
+        {
+          "x": 647,
+          "y": 1311
+        }
+      ]
+    },
+    {
       "name": "stone",
       "instances": [
         {
