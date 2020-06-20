@@ -5,8 +5,8 @@ class CatGame {
     this.height = height;
 
     //create all game layers
-    this.fg = new Layer("foreground", 999, this.width, this.height);
-    this.bg = new Layer("background", 0, this.width, this.height);
+    this.dynamicLayer = new Layer("dynamicLayer", 999, this.width, this.height);
+    this.staticLayer = new Layer("staticLayer", 0, this.width, this.height);
 
     //create a space to store sprites used in the game
     this.sprites = new Map();
@@ -119,8 +119,8 @@ Cat-Video-Game/master/";
     let allSprites = this.sprites.values();
     let count = this.sprites.size-1;
     let interval = setInterval(()=>{
-      this.fg.ctx.clearRect(0,0,this.fg.canvas.width, this.fg.canvas.height);
-      this.fg.ctx.drawImage(allSprites.next().value, 0, 0);
+      this.dynamicLayer.ctx.clearRect(0,0,this.dynamicLayer.canvas.width, this.dynamicLayer.canvas.height);
+      this.dynamicLayer.ctx.drawImage(allSprites.next().value, 0, 0);
       count--;
       if(count < 0) {
         count = this.sprites.size-1;
@@ -131,24 +131,23 @@ Cat-Video-Game/master/";
 
   main(){
     //display main menu
-    fetch(this.levelsPath + "Level-"+1+".JSON")
+    fetch(this.levelsPath + "Level-"+1+"/SpriteMap.JSON")
     .then(result => result.json())
-    .then(levelMap => {
-      this.buildLevel(levelMap);
-      this.levelLoop(levelMap)
+    .then(spriteMap => {
+      this.drawSpritesToCanvas(spriteMap, this.dynamicLayer);
+      this.levelLoop()
     });
   }
 
-  buildLevel(levelMap){
-    //build static sprites
-    let staticSprites = levelMap.staticSprites;
-    for (let i=0; i<staticSprites.length; i++) {
-      let sprite = this.sprites.get(staticSprites[i].name);
-      let instances = staticSprites[i].instances;
+  drawSpritesToCanvas(spriteMap, ctx){
+    let spriteMap = spriteMap.staticSprites;
+    for (let i=0; i<spriteMap.length; i++) {
+      let sprite = this.sprites.get(spriteMap[i].name);
+      let instances = spriteMap[i].instances;
       for (let j=0; j<instances.length; j++) {
         let x = instances[j].x;
         let y = instances[j].y;
-        this.bg.ctx.drawImage(sprite, x, y);
+        ctx.drawImage(sprite, x, y);
       }
     }
     //build dynamicSprites
@@ -179,7 +178,7 @@ Cat-Video-Game/master/";
         dy = 0,
         dWidth = 1000,
         dHeight = 625;
-    this.bg.ctx.drawImage(background, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+    this.staticLayer.ctx.drawImage(background, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   }
 }
 
@@ -200,6 +199,13 @@ class Layer {
 
     //store the context to draw on
     this.ctx = canvas.getContext("2d");
+  }
+}
+
+class Level {
+  constructor (background, levelMap, interferenceMap) {
+    this.background = background;
+    this.interferenceMap = interferenceMap;
   }
 }
 
