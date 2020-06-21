@@ -1,0 +1,44 @@
+{
+  "boundingBox": {
+    "width": 185,
+    "height": 162
+  }
+  "interferenceArea": {
+    "idle": {
+      "x": 70,
+      "y": 31,
+      "width": 34,
+      "height": 116
+    },
+    "walk": {
+      "x": 70,
+      "y": 31,
+      "width": 34,
+      "height": 116
+    },
+    "slide": {
+      "x": 54,
+      "y": 62,
+      "width": 39,
+      "height": 85
+    },
+    "run": {
+      "x": 73,
+      "y": 31,
+      "width": 37,
+      "height": 116
+    },
+    "jump": {
+      "x": 61,
+      "y": 31,
+      "width": 45,
+      "height": 116
+    },
+    "fall": {
+      "x": 63,
+      "y": 31,
+      "width": 30,
+      "height": 116
+    }
+  },
+}

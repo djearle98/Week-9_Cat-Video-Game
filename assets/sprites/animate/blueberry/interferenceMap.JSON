@@ -1,0 +1,14 @@
+{
+  "boundingBox": {
+    "width": 128,
+    "height": 128
+  },
+  "interferenceArea": {
+    "default": {
+      "x": 40,
+      "y": 40,
+      "width": 48,
+      "height": 48
+    }
+  }
+}
