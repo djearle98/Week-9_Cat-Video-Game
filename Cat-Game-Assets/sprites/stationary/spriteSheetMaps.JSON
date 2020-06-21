@@ -1,10 +1,9 @@
 [
   {
-    "filename": "Background.png",
-    "layout": "misc",
+    "filename": "sunnyBackdrop.png",
     "images": [
       {
-        "name": "background",
+        "name": "sunnyBackdrop",
         "width": 1024,
         "height": 1858,
         "x": 0,
@@ -13,46 +12,7 @@
     ]
   },
   {
-    "filename": "Cat.png",
-    "layout": "animation",
-    "unitWidth": 185,
-    "unitHeight": 162,
-    "animations": [
-      {
-        "name": "idle",
-        "n": 10,
-        "y": 0
-      },
-      {
-        "name": "walk",
-        "n": 10,
-        "y": 1
-      },
-      {
-        "name": "slide",
-        "n": 10,
-        "y": 2
-      },
-      {
-        "name": "run",
-        "n": 8,
-        "y": 3
-      },
-      {
-        "name": "jump",
-        "n": 8,
-        "y": 4
-      },
-      {
-        "name": "land",
-        "n": 8,
-        "y": 5
-      }
-    ]
-  },
-  {
-    "filename": "Objects.png",
-    "layout": "misc",
+    "filename": "objects.png",
     "images": [
       {
         "name": "tree1",
@@ -162,10 +122,7 @@
     ]
   },
   {
-    "filename": "Tiles.png",
-    "layout": "grid",
-    "unitWidth": 128,
-    "unitHeight": 128,
+    "filename": "tiles.png",
     "images": [
       {
         "name": "grassFloatingLeft",
@@ -174,93 +131,93 @@
       },
       {
         "name": "grassFloatingCenter",
-        "x": 1,
+        "x": 128,
         "y": 0
       },
       {
         "name": "grassFloatingRight",
-        "x": 2,
+        "x": 256,
         "y": 0
       },
       {
         "name": "grassGroundedEdgeLeft",
         "x": 0,
-        "y": 1
+        "y": 128
       },
       {
         "name": "grassGrounded",
-        "x": 1,
-        "y": 1
+        "x": 128,
+        "y": 128
       },
       {
         "name": "grassGroundedEdgeRight",
-        "x": 2,
-        "y": 1
+        "x": 256,
+        "y": 128
       },
       {
         "name": "soilEdgeLeft",
         "x": 0,
-        "y": 2
+        "y": 256
       },
       {
         "name": "soil",
-        "x": 1,
-        "y": 2
+        "x": 128,
+        "y": 256
       },
       {
         "name": "soilEdgeRight",
-        "x": 2,
-        "y": 2
+        "x": 256,
+        "y": 256
       },
       {
         "name": "soilFloatingLeft",
         "x": 0,
-        "y": 3
+        "y": 384
       },
       {
         "name": "soilFloatingCenter",
-        "x": 1,
-        "y": 3
+        "x": 128,
+        "y": 384
       },
       {
         "name": "soilFloatingRight",
-        "x": 2,
-        "y": 3
+        "x": 256,
+        "y": 384
       },
       {
         "name": "soilCornerRight",
         "x": 0,
-        "y": 4
+        "y": 512
       },
       {
         "name": "soilGround",
         "x": 1,
-        "y": 4
+        "y": 512
       },
       {
         "name": "soilCornerLeft",
-        "x": 2,
-        "y": 4
+        "x": 256,
+        "y": 512
       },
       {
         "name": "grassGroundedEndLeft",
         "x": 0,
-        "y": 5
+        "y": 640
       },
       {
         "name": "grassGroundedEndRight",
-        "x": 2,
-        "y": 5
+        "x": 256,
+        "y": 640
       },
       {
         "name": "waterWaves",
         "x": 0,
-        "y": 6
+        "y": 768
       },
       {
         "name": "waterSolid",
-        "x": 2,
-        "y": 6
+        "x": 256,
+        "y": 768
       }
     ]
   }

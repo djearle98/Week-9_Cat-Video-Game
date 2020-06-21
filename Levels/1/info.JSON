@@ -1,0 +1,20 @@
+{
+  "name": "Getting Started!",
+  "levelNumber": 1,
+  "levelDimensions": {
+    "width": 1024,
+    "height": 1858
+  },
+  "characterCheckpointLocations": [
+    {
+      "x": 201,
+      "y": 971
+    }
+  ],
+  "targetLocations": [
+    {
+      "x": 768,
+      "y": 834
+    }
+  ]
+}
