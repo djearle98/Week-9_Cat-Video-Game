@@ -5,47 +5,21 @@ class CatGame {
     this.masterPath = "https://raw.githubusercontent.com/pensivepixel/\
 Cat-Video-Game/master/";
 
-    fetch(this.masterPath + "assets/sprites/animate/index.JSON")
-    .then(response => response.json())
-    .then(index => {
-      //create new AnimateSprite for each folder in index
-      for (let i = 0; i < index.length; i++) {
-        let path = this.masterPath+"assets/sprites/animate/"+index[i];
-        this.animateSprites.push(new AnimateSprite(path));
-      }
-      return Promise.all(this.animateSprites);
-    })
-    .then(fetch(this.masterPath + "assets/sprites/inanimate/index.JSON"))
-    .then(response => response.json())
-    .then(index => {
-      //create new InanimateSprite for each folder in index
-      for (let i = 0; i < index.length; i++) {
-        let path = this.masterPath+"assets/sprites/inanimate/"+index[i];
-        this.inanimateSprites.push(new InanimateSprite(path));
-      }
-      return Promise.all(this.inanimateSprites);
-    })
-    .then(fetch(this.masterPath + "levels/index.JSON"))
-    .then(response => response.json())
-    .then(index => {
-      this.levelsIndex = index;
-      this.main()
-    })
+  this.assetPack = new AssetPack(
+    new animateSprite(this.masterPath+"assets/sprites/animate/cat/"),
+    new animateSprite(this.masterPath+"assets/sprites/animate/blueberry/"),
+    new inanimateSprite(this.masterPath+"assets/sprites/inanimate/sunnyBackdrop/")
+  );
+
+  main();
   }
 
   main(){
-    let level1 = new Level();
-    level1.load()
-    .then(level1.play(this.gameWindow))
-
-  }
-  loadLevel(levelNum) {
-    //return promise
-    //load all files
-    //build the level
-  }
-  levelLoop(){
-    console.log("levelLoop!");
+    let level1 = new Level(this.assetPack);
+    level1.load(this.masterPath+"levels/1/")
+    .then(level1.build(this.gameWindow))
+    .then(level1.play())
+    .then(console.log("Game Over."););
   }
 }
 class Window {
@@ -76,15 +50,32 @@ class Layer {
     this._ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   }
 }
+class AssetPack {
+  constructor(character, target, backdrop){
+    this.character = character;
+    this.target = target;
+    this.backdrop = backdrop;
+  }
+}
 class Level {
-  constructor (levelNum) {
-    this.levelNum = levelNum;
+  constructor (assetPack) {
+    this.assetPack = assetPack;
   }
-  load() {
-    //return promise
-    //load up all the assets, build the level
+  load(levelPath) {
+    //load and save all the assets
+    this.levelPath = levelPath;
+
+    this.info = fetchJSON(levelPath+"info.JSON");
+    this.interferenceMap = fetchJSON(levelPath+"interferenceMap.JSON");
+    this.scene = fetchImage(levelPath+"scene.png");
+
+    return Promise.all([this.info, this.interferenceMap, this.scene]);
   }
-  play(gameWindow) {
+  build(gameWindow){
+    //draw graphics to gameWindow
+    this.gameWindow = gameWindow;
+  }
+  begin(gameWindow) {
     //display level to the gameWindow
     //requestAnimationFrame
   }
@@ -92,17 +83,34 @@ class Level {
 class AnimateSprite {
   constructor(path) {
     //fetch neccessary files
-    //returns Promise.
+
+    //save all items as Promises.
   }
 }
 class InanimateSprite {
   constructor(path){
     //fetch neccessary files
-    //returns Promise.
+    //save all items as Promises.
   }
 }
 
 let catGame = new CatGame(1024, 1858);
+
+function fetchJSON (path) {
+  return new Promise ((resolve, reject) => {
+    fetch(path)
+    .then(response => response.json())
+    .then(json => resolve(json));
+  };
+}
+
+function fetchImage (path) {
+  return new Promise ((resolve, reject) => {
+    let img = new Image();
+    img.onload = () => resolve(img);
+    img.src = this.imagesPath+filename;
+  });
+}
 
 {
   /*
