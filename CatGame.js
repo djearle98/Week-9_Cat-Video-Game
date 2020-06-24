@@ -1,28 +1,30 @@
 class CatGame {
   constructor (width, height) {
-    let this.gameWindow = new gameWindow(width, height);
+    let this.gameWindow = new GameWindow(width, height);
 
     this.masterPath = "https://raw.githubusercontent.com/pensivepixel/\
 Cat-Video-Game/master/";
 
-  this.assetPack = new AssetPack(
-    new animateSprite(this.masterPath+"assets/sprites/animate/cat/"),
-    new animateSprite(this.masterPath+"assets/sprites/animate/blueberry/"),
-    new inanimateSprite(this.masterPath+"assets/sprites/inanimate/sunnyBackdrop/")
-  );
+    let cat = new AnimateSpritePackage(this.masterPath+"assets/sprites/animate/cat/");
+    cat = cat.getAnimations()[0];
+    let blue =  new AnimateSpritePackage(this.masterPath+"assets/sprites/animate/blueberry/");
+    blue = blue.getAnimations()[0];
+    let backdrop = new InanimateSpritePackage(this.masterPath+"assets/sprites/inanimate/sunnyBackdrop/");
+    backdrop = backdrop.getSprites()[0];
+    this.assetPack = new AssetPack(cat, blue, backdrop);
 
-  main();
+    main();
   }
 
   main(){
     let level1 = new Level(this.assetPack);
     level1.load(this.masterPath+"levels/1/")
     .then(level1.build(this.gameWindow))
-    .then(level1.play())
+    .then(level1.begin())
     .then(console.log("Game Over."););
   }
 }
-class Window {
+class GameWindow {
   constructor (width, height) {
     //create all game layers
     this.animateLayer = new Layer("animateLayer", 999, this.width, this.height);
@@ -72,25 +74,122 @@ class Level {
     return Promise.all([this.info, this.interferenceMap, this.scene]);
   }
   build(gameWindow){
-    //draw graphics to gameWindow
     this.gameWindow = gameWindow;
+    let iL = this.gameWindow.inanimateLayer;
+    let aL = this.gameWindow.animateLayer;
+
+    //draw graphics to gameWindow
+    iL.draw(this.assetPack.backdrop, 0, 0);
   }
   begin(gameWindow) {
     //display level to the gameWindow
     //requestAnimationFrame
+    console.log("Game began.");
   }
 }
-class AnimateSprite {
-  constructor(path) {
-    //fetch neccessary files
+class Sprite {
+  constructor(spritesheet, sx, sy, sWidth, sHeight){
+    this._c = new OffscreenCanvas();
+    this._ctx = this._c.getContext("2d");
+    this.setSprite(spritesheet, sx, sy, sWidth, sHeight);
+  }
+  getSprite() {
+    return this._c;
+  }
+  setSprite(spritesheet, sx, sy, sWidth, sHeight) {
+    //clear canvas
+    this._ctx.clearRect(this._c.width, this._c.height);
 
-    //save all items as Promises.
+    //set the canvas size to fit sprite
+    this._c.width = sWidth;
+    this._c.height = sHeight;
+
+    //draw sprite on canvas
+    this._ctx.drawImage(spritesheet, sx, sy, sWidth, sHeight, 0, 0, sWidth, sHeight);
   }
 }
-class InanimateSprite {
-  constructor(path){
+class InterferenceArea {
+  constructor(x,y,width,height){
+    this.x=x;
+    this.y=y;
+    this.width=width;
+    this.height=height;
+  }
+}
+class Animation {
+  constructor(name, frames, interferenceArea){
+    this.name = name;
+    this.frames = frames;
+    this.interferenceArea = interferenceArea;
+  }
+}
+class AnimateSpritePackage {
+  constructor(path) {
+    this.path = path;
+  }
+  get path(){
+    return this._path;
+  }
+  set path(path){
+    this._path = path;
     //fetch neccessary files
-    //save all items as Promises.
+    let interferenceMap = fetchJSON(this._path+"interferenceMap.JSON");
+    let spritesheetMap = fetchJSON(this._path+"spritesheetMap.JSON");
+    let spritesheet = fetchImage(this._path+"spritesheet.png");
+
+    Promise.all([interferenceMap, spritesheetMap, spritesheet])
+    .then(() => {
+      //build animations
+
+      let animations = [];
+      for (let name in spritesheetMap) {
+        //build interferenceArea object
+        let interferenceArea = new InterferenceArea(
+          interferenceMap.interferenceArea.name.x,
+          interferenceMap.interferenceArea.name.y,
+          interferenceMap.interferenceArea.name.width,
+          interferenceMap.interferenceArea.name.height
+        );
+
+        reel = spritesheetMap.name;
+        let y = reel.y*unitHeight;
+        let frames = [];
+        for (let i = 0; i < reel.n; i++) {
+          let x = unitWidth*i;
+          frames.push(new Sprite(spritesheet, x, y, unitWidth, unitHeight));
+        }
+        animations.push(new Animation(name, frames, interferenceArea));
+      }
+      this._animations.concat(animations);
+    });
+  }
+  getAnimations(){
+    return this._animations;
+  }
+}
+class InanimateSpritePackage {
+  constructor(path){
+    this.path = path;
+  }
+  get path(){
+    return this._path;
+  }
+  set path(path){
+    this._path=path;
+    let spritesheet = fetchImage(path+"spritesheet.png");
+    let spritesheetMap = fetchJSON(path+"spritesheetMap.JSON");
+    Promise.all([spritesheet, spritesheetMap])
+    .then(() => {
+      let sprites = [];
+      for (var name in spritesheetMap) {
+        let s = spritesheetMap.name;
+        sprites.push(new Sprite(spritesheet, s.x, s.y, s.width, s.height));
+      }
+      this._sprites.concat(sprites);
+    });
+  }
+  getSprites(){
+    return this._sprites;
   }
 }
 
@@ -103,7 +202,6 @@ function fetchJSON (path) {
     .then(json => resolve(json));
   };
 }
-
 function fetchImage (path) {
   return new Promise ((resolve, reject) => {
     let img = new Image();
@@ -129,27 +227,27 @@ function fetchImage (path) {
   }
   */
 
-  // processSpriteSheets(spriteSheets) {
-  //   //iterate over all spriteSheets in imageMaps
+  // processSpritesheets(spritesheets) {
+  //   //iterate over all spritesheets in imageMaps
   //   for (let i=0; i<this.imageMaps.length; i++){
   //     switch (this.imageMaps[i].layout) {
   //       case "misc":
-  //         this.processSpriteSheetAsMisc(spriteSheets[i], this.imageMaps[i]);
+  //         this.processSpritesheetAsMisc(spritesheets[i], this.imageMaps[i]);
   //         break;
   //       case "animation":
-  //         this.processSpriteSheetAsAnimation(spriteSheets[i], this.imageMaps[i]);
+  //         this.processSpritesheetAsAnimation(spritesheets[i], this.imageMaps[i]);
   //         break;
   //       case "grid":
-  //         this.processSpriteSheetAsGrid(spriteSheets[i], this.imageMaps[i]);
+  //         this.processSpritesheetAsGrid(spritesheets[i], this.imageMaps[i]);
   //         break;
   //       default:
-  //         console.log("Error processing spriteSheet: invalid layout type: "
+  //         console.log("Error processing spritesheet: invalid layout type: "
   //         + this.imageMaps[i]);
   //     }
   //   }
   // }
   //
-  // processSpriteSheetAsMisc(sprite, map){
+  // processSpritesheetAsMisc(sprite, map){
   //   //iterate over all sprites in sheet
   //   let result = new Map();
   //   for (let i=0; i<map.images.length; i++) {
@@ -169,7 +267,7 @@ function fetchImage (path) {
   //   return result;
   // }
   //
-  // processSpriteSheetAsAnimation(sprite, map){
+  // processSpritesheetAsAnimation(sprite, map){
   //   //convert animation to misc map
   //   //create animation array of sprites and save to animations map
   //   map.images = [];
@@ -193,7 +291,7 @@ function fetchImage (path) {
   //     animations.set(map.animations[i].name, animation);
   //   }
   //   this.animations = animations;
-  //   return this.processSpriteSheetAsMisc(sprite, map);
+  //   return this.processSpritesheetAsMisc(sprite, map);
   // }
   // allSpriteAnimation(){
     //   let allSprites = this.sprites.values();
