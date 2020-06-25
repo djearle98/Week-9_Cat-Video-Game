@@ -1,34 +1,41 @@
 class CatGame {
   constructor (width, height) {
-    let this.gameWindow = new GameWindow(width, height);
-
+    this.gameWindow = new GameWindow(width, height);
     this.masterPath = "https://raw.githubusercontent.com/pensivepixel/\
 Cat-Video-Game/master/";
-
+    //prepare assets
     let cat = new AnimateSpritePackage(this.masterPath+"assets/sprites/animate/cat/");
-    cat = cat.getAnimations()[0];
     let blue =  new AnimateSpritePackage(this.masterPath+"assets/sprites/animate/blueberry/");
-    blue = blue.getAnimations()[0];
     let backdrop = new InanimateSpritePackage(this.masterPath+"assets/sprites/inanimate/sunnyBackdrop/");
-    backdrop = backdrop.getSprites()[0];
-    this.assetPack = new AssetPack(cat, blue, backdrop);
 
-    main();
+    Promise.all([cat.promise, blue.promise, backdrop.promise])
+    .then(() => {
+      //cat = cat.getAnimations()[0];
+      //blue = blue.getAnimations()[0];
+      backdrop = backdrop.getSprites()[0];
+      this.assetPack = new AssetPack(cat, blue, backdrop);
+      this.main();
+    })
   }
 
   main(){
     let level1 = new Level(this.assetPack);
-    level1.load(this.masterPath+"levels/1/")
-    .then(level1.build(this.gameWindow))
-    .then(level1.begin())
-    .then(console.log("Game Over."););
+    level1.launch(this.masterPath+"levels/1/", this.gameWindow);
   }
 }
 class GameWindow {
   constructor (width, height) {
     //create all game layers
-    this.animateLayer = new Layer("animateLayer", 999, this.width, this.height);
-    this.inanimateLayer = new Layer("inanimateLayer", 0, this.width, this.height);
+    this.width = width;
+    this.height = height;
+    this.animateLayer = new Layer("animateLayer", 999, width, height);
+    this.inanimateLayer = new Layer("inanimateLayer", 0, width, height);
+  }
+  setLayerSize(width, height){
+    this.animateLayer.width = width;
+    this.animateLayer.height = height;
+    this.inanimateLayer.width = width;
+    this.inanimateLayer.height = height;
   }
 }
 class Layer {
@@ -43,13 +50,23 @@ class Layer {
     canvas.height = height;
 
     //add to the html document and store in this object
-    this._canvas = document.body.appendChild(canvas);
+    this._c = document.body.appendChild(canvas);
 
     //store the context to draw on
-    this._ctx = canvas.getContext("2d");
+    this._ctx = this._c.getContext("2d");
   }
-  draw(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
-    this._ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+  draw(image, dx, dy) {
+
+    this._ctx.drawImage(image,
+      0, 0, image.width, image.height,
+      dx, dy, image.width, image.height
+    );
+  }
+  clear(){
+    this._ctx.fillStyle = "red";
+    this._ctx.fillRect(0, 0, 300, 150);
+
+    this._ctx.clearRect(0, 0, 300, 150);
   }
 }
 class AssetPack {
@@ -61,35 +78,89 @@ class AssetPack {
 }
 class Level {
   constructor (assetPack) {
-    this.assetPack = assetPack;
+    this.iCanvas = new OffscreenCanvas(0,0); //the inanimate canvas
+    this.iCtx = this.iCanvas.getContext("2d"); //the inamimate context
+    this.aCanvas = new OffscreenCanvas(0,0); //the animate canvas
+    this.aCtx = this.aCanvas.getContext("2d"); //the animate context
+
+    this.setAssetPack(assetPack);
   }
-  load(levelPath) {
+  setAssetPack(assetPack){
+    this.assetPack = assetPack;
+    this.character = assetPack.character;
+    this.target = assetPack.target;
+    this.backdrop = assetPack.backdrop.getSprite();
+  }
+  launch(levelPath, gameWindow) {
+    this.gameWindow = gameWindow;
+    this.gWIL = gameWindow.inanimateLayer;
+    this.gWAL = gameWindow.animateLayer;
     //load and save all the assets
     this.levelPath = levelPath;
 
-    this.info = fetchJSON(levelPath+"info.JSON");
-    this.interferenceMap = fetchJSON(levelPath+"interferenceMap.JSON");
-    this.scene = fetchImage(levelPath+"scene.png");
+    this.info = fetchJSON(levelPath+"info.JSON")
+    this.interferenceMap = fetchJSON(levelPath+"interferenceMap.JSON")
+    this.scene = fetchImage(levelPath+"scene.png")
+    Promise.all([this.info, this.interferenceMap, this.scene])
+    .then((values) => {
+      //save the loaded data
+      this.info = values[0];
+      this.info.characterLocation = {
+        x: this.info.characterCheckpointLocations[0].x,
+        y: this.info.characterCheckpointLocations[0].y
+      }
+      this.interferenceMap = values[1];
+      this.scene = values[2];
 
-    return Promise.all([this.info, this.interferenceMap, this.scene]);
-  }
-  build(gameWindow){
-    this.gameWindow = gameWindow;
-    let iL = this.gameWindow.inanimateLayer;
-    let aL = this.gameWindow.animateLayer;
+      //set up offscreenCanvases to this level's dimensions
+      this.iCanvas.width = this.info.levelDimensions.width;
+      this.iCanvas.height = this.info.levelDimensions.height;
+      this.aCanvas.width = this.info.levelDimensions.width;
+      this.aCanvas.height = this.info.levelDimensions.height;
 
-    //draw graphics to gameWindow
-    iL.draw(this.assetPack.backdrop, 0, 0);
+      //draw the inanimate graphics
+      //backdrop
+      this.iCtx.drawImage(this.backdrop, 0, 0);
+      //scene
+      this.iCtx.drawImage(this.scene, 0, 0);
+
+      this.frame();
+    });
   }
-  begin(gameWindow) {
-    //display level to the gameWindow
-    //requestAnimationFrame
-    console.log("Game began.");
+  frame(){
+    this.calculate();
+    this.draw();
+    this.render();
+    console.log("FRAME");
+    requestAnimationFrame(this.frame.bind(this));
+  }
+  calculate() {
+    this.info.characterLocation.x += 1;
+    this.info.characterLocation.y += 1;
+  }
+  draw(){
+    //draw animate to aCtx at their current positions
+    this.aCtx.drawImage(
+      this.character.getAnimations()[0].frames[0].getSprite(),
+      this.info.characterLocation.x,
+      this.info.characterLocation.y
+    );
+    this.aCtx.drawImage(
+      this.target.getAnimations()[0].frames[0].getSprite(),
+      this.info.targetLocations[0].x,
+      this.info.targetLocations[0].y
+    );
+  }
+  render(){
+    this.gWAL.clear();
+    this.gWIL.clear();
+    this.gWIL.draw(this.iCanvas,-100,-700);
+    this.gWAL.draw(this.aCanvas,-100,-700);
   }
 }
 class Sprite {
   constructor(spritesheet, sx, sy, sWidth, sHeight){
-    this._c = new OffscreenCanvas();
+    this._c = new OffscreenCanvas(sWidth, sHeight);
     this._ctx = this._c.getContext("2d");
     this.setSprite(spritesheet, sx, sy, sWidth, sHeight);
   }
@@ -98,7 +169,7 @@ class Sprite {
   }
   setSprite(spritesheet, sx, sy, sWidth, sHeight) {
     //clear canvas
-    this._ctx.clearRect(this._c.width, this._c.height);
+    this._ctx.clearRect(0, 0, this._c.width, this._c.height);
 
     //set the canvas size to fit sprite
     this._c.width = sWidth;
@@ -132,35 +203,38 @@ class AnimateSpritePackage {
   }
   set path(path){
     this._path = path;
+    this._animations = [];
     //fetch neccessary files
-    let interferenceMap = fetchJSON(this._path+"interferenceMap.JSON");
-    let spritesheetMap = fetchJSON(this._path+"spritesheetMap.JSON");
-    let spritesheet = fetchImage(this._path+"spritesheet.png");
+    let interferenceMap = fetchJSON(this._path+"interferenceMap.JSON")
+    .then((result) => interferenceMap = result);
+    let spritesheetMap = fetchJSON(this._path+"spritesheetMap.JSON")
+    .then((result) => spritesheetMap = result);
+    let spritesheet = fetchImage(this._path+"spritesheet.png")
+    .then((result) => spritesheet = result);
 
-    Promise.all([interferenceMap, spritesheetMap, spritesheet])
+    this.promise = Promise.all([interferenceMap, spritesheetMap, spritesheet])
     .then(() => {
       //build animations
 
-      let animations = [];
-      for (let name in spritesheetMap) {
+      for (let name in spritesheetMap.animations) {
         //build interferenceArea object
         let interferenceArea = new InterferenceArea(
-          interferenceMap.interferenceArea.name.x,
-          interferenceMap.interferenceArea.name.y,
-          interferenceMap.interferenceArea.name.width,
-          interferenceMap.interferenceArea.name.height
+          interferenceMap.interferenceArea[name].x,
+          interferenceMap.interferenceArea[name].y,
+          interferenceMap.interferenceArea[name].width,
+          interferenceMap.interferenceArea[name].height
         );
-
-        reel = spritesheetMap.name;
-        let y = reel.y*unitHeight;
+        let unitHeight = interferenceMap.boundingBox.height;
+        let unitWidth = interferenceMap.boundingBox.width;
+        let reel = spritesheetMap.animations[name];
+        let y = reel.y * unitHeight;
         let frames = [];
         for (let i = 0; i < reel.n; i++) {
           let x = unitWidth*i;
           frames.push(new Sprite(spritesheet, x, y, unitWidth, unitHeight));
         }
-        animations.push(new Animation(name, frames, interferenceArea));
+        this._animations.push(new Animation(name, frames, interferenceArea));
       }
-      this._animations.concat(animations);
     });
   }
   getAnimations(){
@@ -176,16 +250,17 @@ class InanimateSpritePackage {
   }
   set path(path){
     this._path=path;
-    let spritesheet = fetchImage(path+"spritesheet.png");
-    let spritesheetMap = fetchJSON(path+"spritesheetMap.JSON");
-    Promise.all([spritesheet, spritesheetMap])
+    this._sprites = [];
+    let spritesheet = fetchImage(path+"spritesheet.png")
+    .then(result => spritesheet = result);
+    let spritesheetMap = fetchJSON(path+"spritesheetMap.JSON")
+    .then(result => spritesheetMap = result);
+    this.promise = Promise.all([spritesheet, spritesheetMap])
     .then(() => {
-      let sprites = [];
       for (var name in spritesheetMap) {
-        let s = spritesheetMap.name;
-        sprites.push(new Sprite(spritesheet, s.x, s.y, s.width, s.height));
+        let s = spritesheetMap[name];
+        this._sprites.push(new Sprite(spritesheet, s.x, s.y, s.width, s.height));
       }
-      this._sprites.concat(sprites);
     });
   }
   getSprites(){
@@ -193,20 +268,20 @@ class InanimateSpritePackage {
   }
 }
 
-let catGame = new CatGame(1024, 1858);
+let catGame = new CatGame(800, 500);
 
 function fetchJSON (path) {
   return new Promise ((resolve, reject) => {
     fetch(path)
     .then(response => response.json())
     .then(json => resolve(json));
-  };
+  });
 }
 function fetchImage (path) {
   return new Promise ((resolve, reject) => {
     let img = new Image();
     img.onload = () => resolve(img);
-    img.src = this.imagesPath+filename;
+    img.src = path;
   });
 }
 
