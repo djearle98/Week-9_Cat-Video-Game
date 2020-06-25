@@ -1,10 +1,8 @@
 {
-  "sprites": {
-    "sunnyBackdrop": {
-      "x": 0,
-      "y": 0,
-      "width": 1024,
-      "height": 1218
-    }
+  "sunnyBackdrop": {
+    "x": 0,
+    "y": 0,
+    "width": 1024,
+    "height": 1218
   }
 }
