@@ -2,7 +2,7 @@
   "boundingBox": {
     "width": 185,
     "height": 162
-  }
+  },
   "interferenceArea": {
     "idle": {
       "x": 70,
@@ -40,5 +40,5 @@
       "width": 30,
       "height": 116
     }
-  },
+  }
 }
