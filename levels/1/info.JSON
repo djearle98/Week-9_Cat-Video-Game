@@ -1,14 +1,15 @@
 {
   "name": "Getting Started!",
   "levelNumber": 1,
+  "gravity": 5,
   "levelDimensions": {
     "width": 1024,
     "height": 1858
   },
   "characterCheckpointLocations": [
     {
-      "x": 201,
-      "y": 971
+      "x": 128,
+      "y": 940
     }
   ],
   "targetLocations": [
@@ -16,5 +17,29 @@
       "x": 768,
       "y": 834
     }
-  ]
+  ],
+  "interferenceMap": {
+    "solid": [
+      {
+        "x": 0,
+        "y": 1087,
+        "width": 512,
+        "height": 771
+      },
+      {
+        "x": 640,
+        "y": 962,
+        "width": 384,
+        "height": 93
+      }
+    ],
+    "liquid": [
+      {
+        "x": 512,
+        "y": 1119,
+        "width": 512,
+        "height": 739
+      }
+    ]
+  }
 }

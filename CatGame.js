@@ -1,19 +1,21 @@
 class CatGame {
   constructor (width, height) {
     this.gameWindow = new GameWindow(width, height);
-    this.masterPath = "https://raw.githubusercontent.com/pensivepixel/\
-Cat-Video-Game/master/";
+    //PUBLIC MASTERPATH:
+    //this.masterPath = "https://raw.githubusercontent.com/pensivepixel/Cat-Video-Game/master/";
+    //LOCAL MASTERPATH
+    this.masterPath = "http://127.0.0.1:8887/"
     //prepare assets
-    let cat = new AnimateSpritePackage(this.masterPath+"assets/sprites/animate/cat/");
-    let blue =  new AnimateSpritePackage(this.masterPath+"assets/sprites/animate/blueberry/");
-    let backdrop = new InanimateSpritePackage(this.masterPath+"assets/sprites/inanimate/sunnyBackdrop/");
-
-    Promise.all([cat.promise, blue.promise, backdrop.promise])
+    let animateSpritePackage = new AnimateSpritePackage(this.masterPath+"assets/sprites/animate/");
+    let inanimateSpritePackage = new InanimateSpritePackage(this.masterPath+"assets/sprites/inanimate/");
+    Promise.all([animateSprites.promise, inanimateSprites.promise])
     .then(() => {
-      //cat = cat.getAnimations()[0];
-      //blue = blue.getAnimations()[0];
-      backdrop = backdrop.getSprites()[0];
+      let animateSprites = animateSpritePackage.animateSprites;
+      let cat = animateSprites["cat"]
+      let inanimateSprites = inanimateSpritePackage.inanimateSprites;
+      let backdrop = inanimateSprites["sunnyBackdrop"].canvas;
       this.assetPack = new AssetPack(cat, blue, backdrop);
+
       this.main();
     })
   }
@@ -63,10 +65,7 @@ class Layer {
     );
   }
   clear(){
-    this._ctx.fillStyle = "red";
-    this._ctx.fillRect(0, 0, 300, 150);
-
-    this._ctx.clearRect(0, 0, 300, 150);
+    this._ctx.clearRect(0, 0, this._c.width, this._c.height);
   }
 }
 class AssetPack {
@@ -88,7 +87,9 @@ class Level {
   setAssetPack(assetPack){
     this.assetPack = assetPack;
     this.character = assetPack.character;
+    this.velocities = this.character.velocities;
     this.target = assetPack.target;
+    this.targets = [];
     this.backdrop = assetPack.backdrop.getSprite();
   }
   launch(levelPath, gameWindow) {
@@ -98,6 +99,11 @@ class Level {
     //load and save all the assets
     this.levelPath = levelPath;
 
+    this.runLeft = false;
+    this.runRight = false;
+    this.jump = false;
+    this.slide = false;
+
     this.info = fetchJSON(levelPath+"info.JSON")
     this.interferenceMap = fetchJSON(levelPath+"interferenceMap.JSON")
     this.scene = fetchImage(levelPath+"scene.png")
@@ -105,50 +111,163 @@ class Level {
     .then((values) => {
       //save the loaded data
       this.info = values[0];
-      this.info.characterLocation = {
-        x: this.info.characterCheckpointLocations[0].x,
-        y: this.info.characterCheckpointLocations[0].y
-      }
       this.interferenceMap = values[1];
       this.scene = values[2];
 
+      //move some info to more convenient locations
+      this.character.location = {
+        x: this.info.characterCheckpointLocations[0].x,
+        y: this.info.characterCheckpointLocations[0].y - 128
+      }
+      this.character.activeSprite = "idle";
+      this.velocities.gravity = this.info.gravity;
+      this.targets = this.info.targetLocations;
       //set up offscreenCanvases to this level's dimensions
       this.iCanvas.width = this.info.levelDimensions.width;
       this.iCanvas.height = this.info.levelDimensions.height;
       this.aCanvas.width = this.info.levelDimensions.width;
       this.aCanvas.height = this.info.levelDimensions.height;
 
-      //draw the inanimate graphics
+      //prepare the inanimate OSC for reuse
       //backdrop
       this.iCtx.drawImage(this.backdrop, 0, 0);
       //scene
       this.iCtx.drawImage(this.scene, 0, 0);
-
-      this.frame();
+      //BEGIN THE LEVEL
+      this.begin();
     });
   }
+  begin() {
+    document.addEventListener('keydown', this.keyDown);
+    document.addEventListener('keyup', this.keyUp);
+    console.log("Game Begin!");
+    this.frame();
+  }
+  end(){
+    document.removeEventListener('keydown', this.keyPress);
+    console.log("Game Over!")
+  }
+  keyDown(e){
+    switch (e.code) {
+      case "KeyW":
+      case "ArrowUp":
+      this.jump=true;
+      break;
+      case "KeyS":
+      case "ArrowDown":
+      this.slide=true;
+      break;
+      case "KeyD":
+      case "ArrowRight":
+      this.runRight=true;
+      break;
+      case "KeyA":
+      case "ArrowLeft":
+      this.runLeft=true;
+      break;
+      default:
+
+
+    }
+  }
+  keyUp(e){
+    switch (e.code) {
+      case "KeyW":
+      case "ArrowUp":
+      this.jump=false;
+      break;
+      case "KeyS":
+      case "ArrowDown":
+      this.slide=false;
+      break;
+      case "KeyD":
+      case "ArrowRight":
+      this.runRight=false;
+      break;
+      case "KeyA":
+      case "ArrowLeft":
+      this.runLeft=false;
+      break;
+      default:
+
+    }
+  }
   frame(){
-    this.calculate();
-    this.draw();
-    this.render();
-    console.log("FRAME");
-    requestAnimationFrame(this.frame.bind(this));
+    if(this.calculate()){
+      this.draw();
+      this.render();
+      requestAnimationFrame(this.frame.bind(this));
+    } else {
+      end();
+    }
   }
   calculate() {
-    this.info.characterLocation.x += 1;
-    this.info.characterLocation.y += 1;
+    if(this.slide){
+
+    } else {
+      this.character.vx = 0;
+    }
+    this.character.vy += this.velocities.gravity;
+
+    if(this.runRight){
+      this.character.vx += this.velocities.run;
+    }
+    if(this.runLeft){
+      this.character.vx -= this.velocities.run;
+    }
+    if(this.jump){
+      let touchingGround = true;
+      if (touchingGround) {
+        this.character.vy += this.velocities.jump;
+      }
+    }
+    this.character.lastLocation = this.character.location;
+    this.character.location.x += this.character.vx;
+    this.character.location.y += this.character.vy;
+
+    if(this.character.vy == 0) {
+      //character is not jumping or falling
+      if(this.character.vx == 0) {
+        //character is not moving
+        this.character.activeSprite = "idle";
+      } else {
+        this.character.flipped = (this.character.vx < 0);
+        if (this.slide) {
+          //character is sliding
+          this.character.activeSprite = "slide";
+        } else {
+          //character is not sliding, assuming that means running
+          this.character.activeSprite = "run";
+        }
+      }
+    }
+
+
+    //determine if character is interfering with standable
+    let standable = this.interferenceMap.standable;
+    for (let i = 0; i < standable.length; i++) {
+      if(character.activeSprite.intersects(standable[i])){
+        character.location.y = standable[i].y - character.activeSprite.getHeight();
+      }
+    }
+      //update the character's location to legal value
+      return true;
+    //determine if character is interfering with sinkable
+      //end the game
+      return false;
   }
   draw(){
     //draw animate to aCtx at their current positions
+    this.aCtx.clearRect(0,0,this.aCanvas.width, this.aCanvas.height);
     this.aCtx.drawImage(
-      this.character.getAnimations()[0].frames[0].getSprite(),
-      this.info.characterLocation.x,
-      this.info.characterLocation.y
+      this.character.animations["fall"].getFrame(),
+      this.character.location.x,
+      this.character.location.y
     );
     this.aCtx.drawImage(
-      this.target.getAnimations()[0].frames[0].getSprite(),
-      this.info.targetLocations[0].x,
-      this.info.targetLocations[0].y
+      this.target.animations["default"].getFrame(),
+      this.target[0].location.x,
+      this.target[0].location.y
     );
   }
   render(){
@@ -158,40 +277,73 @@ class Level {
     this.gWAL.draw(this.aCanvas,-100,-700);
   }
 }
-class Sprite {
+class InanimateSprite {
   constructor(spritesheet, sx, sy, sWidth, sHeight){
-    this._c = new OffscreenCanvas(sWidth, sHeight);
-    this._ctx = this._c.getContext("2d");
-    this.setSprite(spritesheet, sx, sy, sWidth, sHeight);
+    this._canvas = new OffscreenCanvas(0, 0);
+    this._ctx = this._canvas.getContext("2d");
+    this.set(spritesheet, sx, sy, sWidth, sHeight);
   }
-  getSprite() {
-    return this._c;
-  }
-  setSprite(spritesheet, sx, sy, sWidth, sHeight) {
-    //clear canvas
-    this._ctx.clearRect(0, 0, this._c.width, this._c.height);
-
+  set(spritesheet, sx, sy, sWidth, sHeight) {
     //set the canvas size to fit sprite
-    this._c.width = sWidth;
-    this._c.height = sHeight;
+    this._canvas.width = this._width = sWidth;
+    this._canvas.height = this._height = sHeight;
 
-    //draw sprite on canvas
+    //clear canvas
+    this._ctx.clearRect(0, 0, this._width, this._height);
+
+    //draw sprite onto canvas
     this._ctx.drawImage(spritesheet, sx, sy, sWidth, sHeight, 0, 0, sWidth, sHeight);
   }
-}
-class InterferenceArea {
-  constructor(x,y,width,height){
-    this.x=x;
-    this.y=y;
-    this.width=width;
-    this.height=height;
+  get canvas(){
+    return this._canvas;
+  }
+  set canvas(){
+    console.log("Can't set canvas of InanimateSprite. Use InanimateSprite.set() instead.");
+  }
+  get ctx(){
+    return this._ctx;
+  }
+  set ctx(){
+    console.log("Can't set ctx of InanimateSprite. Use InanimateSprite.set() instead.");
+  }
+  set width(v) {
+    console.log("Can't set width of InamimateSprite. Use InanimateSprite.set() instead.");
+  }
+  get width(){
+    return this._width;
+  }
+  set height() {
+    console.log("Can't set height of InamimateSprite. Use InanimateSprite.set() instead.");
+  }
+  get height() {
+    return this._height;
   }
 }
 class Animation {
-  constructor(name, frames, interferenceArea){
-    this.name = name;
+  constructor(frames, rate, interferenceArea){
     this.frames = frames;
+    this.rate = rate;
     this.interferenceArea = interferenceArea;
+    this.i = 0;
+    this.n = this.frames.length;
+    this.lastAdvance = 0;
+  }
+  getFrame(){
+    if (Date.now() - this.lastAdvance > this.rate) {
+      this._advanceFrame();
+    }
+    return this.frames[this.i].getSprite();
+  }
+  _advanceFrame(){
+    this.lastAdvance = Date.now();
+    this.i++;
+    this.i %= this.n;
+  }
+}
+class AnimateSprite {
+  constructor(){
+    this.animations = {};
+    this.velocities = {};
   }
 }
 class AnimateSpritePackage {
@@ -203,42 +355,26 @@ class AnimateSpritePackage {
   }
   set path(path){
     this._path = path;
-    this._animations = [];
     //fetch neccessary files
-    let interferenceMap = fetchJSON(this._path+"interferenceMap.JSON")
-    .then((result) => interferenceMap = result);
-    let spritesheetMap = fetchJSON(this._path+"spritesheetMap.JSON")
-    .then((result) => spritesheetMap = result);
+    let info = fetchJSON(this._path+"info.JSON")
     let spritesheet = fetchImage(this._path+"spritesheet.png")
-    .then((result) => spritesheet = result);
 
-    this.promise = Promise.all([interferenceMap, spritesheetMap, spritesheet])
-    .then(() => {
-      //build animations
+    this.promise = Promise.all([info, spritesheet])
+    .then((values) => {
+      info = values[0];
+      spritesheet = values[1];
 
-      for (let name in spritesheetMap.animations) {
-        //build interferenceArea object
-        let interferenceArea = new InterferenceArea(
-          interferenceMap.interferenceArea[name].x,
-          interferenceMap.interferenceArea[name].y,
-          interferenceMap.interferenceArea[name].width,
-          interferenceMap.interferenceArea[name].height
-        );
-        let unitHeight = interferenceMap.boundingBox.height;
-        let unitWidth = interferenceMap.boundingBox.width;
-        let reel = spritesheetMap.animations[name];
-        let y = reel.y * unitHeight;
-        let frames = [];
-        for (let i = 0; i < reel.n; i++) {
-          let x = unitWidth*i;
-          frames.push(new Sprite(spritesheet, x, y, unitWidth, unitHeight));
+      for(let spriteName in info){
+        for (let animationName in info[name].animations) {
+          let frames = [];
+          // for (let i = 0; i < reel.n; i++) {
+          //   let x = unitWidth*i;
+          //   frames.push(new InanimateSprite(spritesheet, x, y, unitWidth, unitHeight));
+          // }
+          // this.animations[name] = new Animation(frames, loopStart, rate, interferenceArea);
         }
-        this._animations.push(new Animation(name, frames, interferenceArea));
       }
     });
-  }
-  getAnimations(){
-    return this._animations;
   }
 }
 class InanimateSpritePackage {
@@ -259,7 +395,7 @@ class InanimateSpritePackage {
     .then(() => {
       for (var name in spritesheetMap) {
         let s = spritesheetMap[name];
-        this._sprites.push(new Sprite(spritesheet, s.x, s.y, s.width, s.height));
+        this._sprites.push(new InanimateSprite(spritesheet, s.x, s.y, s.width, s.height));
       }
     });
   }
@@ -283,137 +419,4 @@ function fetchImage (path) {
     img.onload = () => resolve(img);
     img.src = path;
   });
-}
-
-{
-  /*
-  { //download all images
-    this.imageMaps = imageMaps;
-    let promises = [];
-    for (let i=0; i<imageMaps.length; i++){
-      let filename = imageMaps[i].filename;
-      promises[i] = new Promise((resolve) => {
-        let img = new Image();
-        img.onload = () => resolve(img);
-        img.src = this.imagesPath+filename;
-      });
-    }
-    return Promise.all(promises);
-  }
-  */
-
-  // processSpritesheets(spritesheets) {
-  //   //iterate over all spritesheets in imageMaps
-  //   for (let i=0; i<this.imageMaps.length; i++){
-  //     switch (this.imageMaps[i].layout) {
-  //       case "misc":
-  //         this.processSpritesheetAsMisc(spritesheets[i], this.imageMaps[i]);
-  //         break;
-  //       case "animation":
-  //         this.processSpritesheetAsAnimation(spritesheets[i], this.imageMaps[i]);
-  //         break;
-  //       case "grid":
-  //         this.processSpritesheetAsGrid(spritesheets[i], this.imageMaps[i]);
-  //         break;
-  //       default:
-  //         console.log("Error processing spritesheet: invalid layout type: "
-  //         + this.imageMaps[i]);
-  //     }
-  //   }
-  // }
-  //
-  // processSpritesheetAsMisc(sprite, map){
-  //   //iterate over all sprites in sheet
-  //   let result = new Map();
-  //   for (let i=0; i<map.images.length; i++) {
-  //     let currentSprite = map.images[i];
-  //     let osc = new OffscreenCanvas(currentSprite.width, currentSprite.height);
-  //     let ctx = osc.getContext("2d");
-  //     let sx = currentSprite.x;
-  //     let sy = currentSprite.y;
-  //     let dWidth, sWidth = dWidth = currentSprite.width;
-  //     let dHeight, sHeight = dHeight = currentSprite.height;
-  //     let dy, dx = dy = 0;
-  //
-  //     ctx.drawImage(sprite, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-  //     result.set(currentSprite.name, osc);
-  //     this.sprites.set(currentSprite.name, osc);
-  //   }
-  //   return result;
-  // }
-  //
-  // processSpritesheetAsAnimation(sprite, map){
-  //   //convert animation to misc map
-  //   //create animation array of sprites and save to animations map
-  //   map.images = [];
-  //   let animations = new Map();
-  //   let unitWidth = map.unitWidth;
-  //   let unitHeight = map.unitHeight;
-  //   for (let i=0; i<map.animations.length; i++) {
-  //     let animation = [];
-  //     for (let j=0; j<map.animations[i].n; j++) {
-  //       //create and push an image object for this frame
-  //       let spriteName = map.animations[i].name+""+j;
-  //       animation.push(spriteName);
-  //       map.images.push({
-  //         "name": spriteName,
-  //         "width": unitWidth,
-  //         "height": unitHeight,
-  //         "x": unitWidth*j,
-  //         "y": unitHeight*i
-  //       });
-  //     }
-  //     animations.set(map.animations[i].name, animation);
-  //   }
-  //   this.animations = animations;
-  //   return this.processSpritesheetAsMisc(sprite, map);
-  // }
-  // allSpriteAnimation(){
-    //   let allSprites = this.sprites.values();
-    //   let count = this.sprites.size-1;
-    //   let interval = setInterval(()=>{
-      //     this.dynamicLayer.ctx.clearRect(0,0,this.dynamicLayer.canvas.width, this.dynamicLayer.canvas.height);
-      //     this.dynamicLayer.ctx.drawImage(allSprites.next().value, 0, 0);
-      //     count--;
-      //     if(count < 0) {
-        //       count = this.sprites.size-1;
-        //       allSprites = this.sprites.values();
-        //     }
-        //   }, 100);
-        // }
-
-  // drawSpritesToCanvas(spriteMap, ctx){
-  //   let spriteMap = spriteMap.staticSprites;
-  //   for (let i=0; i<spriteMap.length; i++) {
-  //     let sprite = this.sprites.get(spriteMap[i].name);
-  //     let instances = spriteMap[i].instances;
-  //     for (let j=0; j<instances.length; j++) {
-  //       let x = instances[j].x;
-  //       let y = instances[j].y;
-  //       ctx.drawImage(sprite, x, y);
-  //     }
-  //   }
-  // }
-
-  // infiniteMoveBackground() {
-  //   this.backgroundOffsetX += 0.5;
-  //   if (this.backgroundOffsetX > 1000) {
-  //     this.backgroundOffsetX -= 1000;
-  //   }
-  //   this.drawBackground(this.backgroundOffsetX, this.backgroundOffsetY);
-  //   requestAnimationFrame(() => this.infiniteMoveBackground());
-  // }
-  //
-  // drawBackground(offsetX, offsetY) {
-  //   let background = this.offscreenCanvases["Background"],
-  //       sx = offsetX,
-  //       sy = offsetY,
-  //       sWidth = 1000,
-  //       sHeight = 625,
-  //       dx = 0,
-  //       dy = 0,
-  //       dWidth = 1000,
-  //       dHeight = 625;
-  //   this.staticLayer.ctx.drawImage(background, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-  // }
 }

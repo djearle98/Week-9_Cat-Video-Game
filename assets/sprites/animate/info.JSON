@@ -1,0 +1,113 @@
+{
+  "cat": {
+    "boundingBox": {
+      "width": 185,
+      "height": 162
+    },
+    "animationRate": 90,
+    "animations": {
+      "idle": {
+        "reel": {
+          "length": 10,
+          "y": 0
+        },
+        "interferenceArea": {
+          "x": 70,
+          "y": 31,
+          "width": 34,
+          "height": 116
+        }
+      },
+      "walk": {
+        "reel": {
+          "length": 10,
+          "y": 162
+        },
+        "interferenceArea": {
+          "x": 70,
+          "y": 31,
+          "width": 34,
+          "height": 116
+        },
+        "velocity": {
+          "x": 5
+        }
+      },
+      "slide": {
+        "reel": {
+          "length": 10,
+          "y": 324
+        },
+        "interferenceArea": {
+          "x": 54,
+          "y": 62,
+          "width": 39,
+          "height": 85
+        }
+      },
+      "run": {
+        "reel": {
+          "length": 8,
+          "y": 486
+        },
+        "interferenceArea": {
+          "x": 73,
+          "y": 31,
+          "width": 37,
+          "height": 116
+        },
+        "velocity": {
+          "x": 10
+        }
+      },
+      "jump": {
+        "reel": {
+          "length": 8,
+          "y": 648
+        },
+        "interferenceArea": {
+          "x": 61,
+          "y": 31,
+          "width": 45,
+          "height": 116
+        },
+        "velocity": {
+          "x": 10
+        }
+      },
+      "fall": {
+        "reel": {
+          "length": 8,
+          "y": 810
+        },
+        "interferenceArea": {
+          "x": 63,
+          "y": 31,
+          "width": 30,
+          "height": 116
+        }
+      }
+    }
+  },
+  "blueberry": {
+    "boundingBox": {
+      "width": 128,
+      "height": 128
+    },
+    "rate": 40,
+    "animations":{
+      "spin": {
+        "reel": {
+          "length": 15,
+          "y": 972
+        },
+        "interferenceArea": {
+          "x": 40,
+          "y": 40,
+          "width": 48,
+          "height": 48
+        }
+      }
+    }
+  }
+}

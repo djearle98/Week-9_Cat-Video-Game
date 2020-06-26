@@ -1,0 +1,12 @@
+{
+  "sunnyBackdrop": {
+    "boundingBox":{
+      "width": 1024,
+      "height": 1218
+    }
+    "spriteLocation":{
+      "x": 0,
+      "y": 0
+    }
+  }
+}
